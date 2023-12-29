@@ -1,0 +1,12 @@
+---
+- name: Deploy n8n service
+
+  hosts: lol
+
+  vars_files:
+    - vars/common.yml
+    - vars/timezone.yml
+
+  tasks:
+    - import_tasks: tasks/n8n/start.yml
+    # - import_tasks: tasks/common/prune.yml

@@ -1,0 +1,66 @@
+version: "3.8"
+
+volumes:
+  n8n_data:
+
+x-shared: &shared
+  restart: always
+  image: docker.n8n.io/n8nio/n8n
+  logging:
+    options:
+      max-size: ${LOG_MAX_SIZE:-10m}
+      max-file: ${LOG_MAX_FILE:-10}
+  volumes:
+    - n8n_data:/home/node/.n8n
+  networks:
+      - default
+
+services:
+  n8n:
+    <<: *shared
+    container_name: n8n_master
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${POSTGRES_HOST}
+      - DB_POSTGRESDB_PORT=${POSTGRES_PORT}
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_PROTOCOL=https
+      - N8N_HOST=n8n.vgroup.com.vn
+      - WEBHOOK_URL=https://n8n.vgroup.com.vn/
+      - WEBHOOK_TUNNEL_URL=https://n8n.vgroup.com.vn/
+      - N8N_LOG_LEVEL=debug
+      - QUEUE_BULL_REDIS_HOST=${REDIS_HOST}
+      - QUEUE_HEALTH_CHECK_ACTIVE=true
+      - GENERIC_TIMEZONE=${TZ}
+      - TZ=${TZ}
+      - VIRTUAL_PORT=5678
+      - VIRTUAL_PROTO=http
+      - VIRTUAL_HOST=n8n.vgroup.com.vn
+      - LETSENCRYPT_HOST=n8n.vgroup.com.vn
+      - LETSENCRYPT_EMAIL=anvn@vgroup.vn
+    expose:
+      - 5678
+
+  n8n-worker:
+    <<: *shared
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${POSTGRES_HOST}
+      - DB_POSTGRESDB_PORT=${POSTGRES_PORT}
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    container_name: n8n_worker
+    command: worker
+    depends_on:
+      - n8n
+
+networks:
+  default:
+    name: nginx_proxy
+    external: true

@@ -1,0 +1,20 @@
+---
+- name: Copy n8n folder
+  copy:
+    src: ./docker/n8n
+    dest: ~/docker
+    mode: 0755
+
+- name: Shut down service
+  shell: |
+    cd ~/docker/n8n
+    docker compose down
+
+- name: Start n8n
+  shell: |
+    cd ~/docker/n8n
+    export TZ={{tz}}
+    export NETWORK={{network}}
+    export LOG_MAX_SIZE={{log_max_size}}
+    export LOG_MAX_FILE={{log_max_file}}
+    docker compose up -d
