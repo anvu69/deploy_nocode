@@ -1,0 +1,33 @@
+version: "3.8"
+# This is an example setup with an Nginx reverse proxy.
+# If you already have an Nginx reverse proxy running,
+# then allow the docker-compose.yml to reference an external network that the reverse proxy container is on
+# (in lieu of the frontend network in this file) and have the NocoDB container connect to it.
+services: 
+  nocodb: 
+    container_name: nocodb
+    environment:
+      - NC_DB=pg://${POSTGRES_HOST}:${POSTGRES_PORT}?u=${POSTGRES_USER}&p=${POSTGRES_PASSWORD}&d=${POSTGRES_DB}
+      - NC_PUBLIC_URL=https://nocodb.vgroup.com.vn
+      - VIRTUAL_PORT=8080
+      - VIRTUAL_PROTO=http
+      - VIRTUAL_HOST=nocodb.vgroup.com.vn
+      - LETSENCRYPT_HOST=nocodb.vgroup.com.vn
+      - LETSENCRYPT_EMAIL=anvn@vgroup.vn
+    image: "nocodb/nocodb:latest"
+    networks:
+      - default
+    restart: always
+    ports: 
+      - 8080
+    volumes:
+      - "./nc_data:/usr/app/data"
+    logging:
+      options:
+        max-size: ${LOG_MAX_SIZE:-10m}
+        max-file: ${LOG_MAX_FILE:-10}
+
+networks:
+  default:
+    name: ${NETWORK:-nginx_proxy}
+    external: true

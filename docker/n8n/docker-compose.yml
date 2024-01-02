@@ -62,5 +62,5 @@ services:
 
 networks:
   default:
-    name: nginx_proxy
+    name: ${NETWORK:-nginx_proxy}
     external: true

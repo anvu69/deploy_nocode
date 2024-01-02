@@ -1,0 +1,19 @@
+---
+- name: Copy baserow folder
+  copy:
+    src: ./docker/baserow
+    dest: ~/docker
+    mode: 0755
+
+- name: Shut down service
+  shell: |
+    cd ~/docker/baserow
+    docker compose down
+
+- name: Start baserow
+  shell: |
+    cd ~/docker/baserow
+    export NETWORK={{network}}
+    export LOG_MAX_SIZE={{log_max_size}}
+    export LOG_MAX_FILE={{log_max_file}}
+    docker compose up -d

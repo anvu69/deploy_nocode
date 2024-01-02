@@ -1,5 +1,5 @@
 ---
-- name: Deploy n8n service
+- name: Deploy baserow service
 
   hosts: lottery1
 
@@ -8,5 +8,5 @@
     - vars/timezone.yml
 
   tasks:
-    - import_tasks: tasks/n8n/start.yml
+    - import_tasks: tasks/baserow/start.yml
     # - import_tasks: tasks/common/prune.yml

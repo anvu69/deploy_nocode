@@ -3,3 +3,6 @@
 
 [lol]
 46.250.229.222 ansible_ssh_user=root
+
+[lottery1]
+185.111.159.118 ansible_ssh_user=root

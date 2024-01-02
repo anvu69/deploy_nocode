@@ -1,0 +1,19 @@
+---
+- name: Copy airflow folder
+  copy:
+    src: ./docker/airflow
+    dest: ~/docker
+    mode: 0755
+
+- name: Shut down service
+  shell: |
+    cd ~/docker/airflow
+    docker compose down
+
+- name: Start airflow
+  shell: |
+    cd ~/docker/airflow
+    export NETWORK={{network}}
+    export LOG_MAX_SIZE={{log_max_size}}
+    export LOG_MAX_FILE={{log_max_file}}
+    docker compose up -d
